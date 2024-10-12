@@ -10,4 +10,4 @@ SCREENSHOT HERE
 
 ## Play Now
 
-[Coming Soon](https://github.com/Torvec/tic-tac-toe)
+[Coming Soon](https://github.com/Torvec/tic-tac-toe-classic)
