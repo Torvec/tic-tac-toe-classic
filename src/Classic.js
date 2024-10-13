@@ -50,39 +50,39 @@ class Cell {
   cellStates(stateName) {
     switch (stateName) {
       case CELL.EMPTY:
-        this.borderColor = "black";
+        this.borderColor = "white";
         this.bg = "lightgray";
         this.color = "";
         this.content = " ";
         break;
       case CELL.X:
-        this.borderColor = "blue";
-        this.bg = "darkblue";
-        this.color = "lightblue";
+        this.borderColor = "#99A3FF";
+        this.bg = "#0A1DC2";
+        this.color = "#99A3FF";
         this.content = "X";
         break;
       case CELL.O:
-        this.borderColor = "red";
-        this.bg = "darkred";
-        this.color = "pink";
+        this.borderColor = "#FFCCCC";
+        this.bg = "#C20A0A";
+        this.color = "#FFCCCC";
         this.content = "O";
         break;
     }
     switch (this.grid.state) {
       case GRID.X:
-        this.borderColor = "blue";
-        this.bg = "darkblue";
-        this.color = "lightblue";
+        this.borderColor = "rgba(10, 29, 194, 0.2)";
+        this.bg = "#99A3FF";
+        this.color = "rgba(10, 29, 194, 0.2)";
         break;
       case GRID.O:
-        this.borderColor = "red";
-        this.bg = "darkred";
-        this.color = "pink";
+        this.borderColor = "rgba(194, 10, 10, 0.2)";
+        this.bg = "#FFCCCC";
+        this.color = "rgba(194, 10, 10, 0.2)";
         break;
       case GRID.DRAW:
-        this.borderColor = "black";
-        this.bg = "darkgray";
-        this.color = "lightgray";
+        this.borderColor = "#999999";
+        this.bg = "#AAAAAA";
+        this.color = "#999999";
         break;
     }
   }
@@ -116,7 +116,7 @@ class Cell {
     });
     // Cell Content
     c.fillStyle = this.color;
-    c.font = "bold 64px Roboto Mono";
+    c.font = "bold 128px Roboto Mono";
     c.textAlign = "center";
     c.textBaseline = "middle";
     c.fillText(
@@ -202,7 +202,6 @@ export class Grid {
     if (won) {
       this.setState(GRID[winner]);
       this.gameOver = true;
-      console.log(winner);
     } else if (this.isGridDraw(this.cells)) {
       this.setState(GRID.DRAW);
       this.gameOver = true;

@@ -91,9 +91,9 @@ export class EndGameMessage extends UI {
   draw({ c, winner, message, x, y }) {
     c.save();
     c.fillStyle = "white";
-    c.shadowColor = "rgba(0, 0, 0, 0.5)";
+    c.shadowColor = "rgba(0, 0, 0, 0.25)";
     c.shadowBlur = 10;
-    c.shadowOffsetX = 5;
+    c.shadowOffsetX = 0;
     c.shadowOffsetY = 5;
     c.fillRect(
       0,
@@ -101,10 +101,10 @@ export class EndGameMessage extends UI {
       this.game.width,
       this.game.height * 0.25
     );
-    if (winner === "X") c.fillStyle = "blue";
-    else if (winner === "O") c.fillStyle = "maroon";
+    if (winner === "X") c.fillStyle = "#0A1DC2";
+    else if (winner === "O") c.fillStyle = "#C20A0A";
     else {
-      c.fillStyle = "black";
+      c.fillStyle = "#999999";
     }
     c.font = "bold 96px Roboto";
     c.textAlign = "center";
