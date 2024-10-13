@@ -1,3 +1,5 @@
+import { RoundedRect, EndGameMessage, CurrentPlayerSign } from "./UI.js";
+
 const PLAYER = {
   X: "X",
   O: "O",
@@ -35,19 +37,12 @@ class Cell {
     this.width = width;
     this.height = height;
     this.borderColor;
-    this.borderWidth = 2;
+    this.borderWidth = 4;
     this.bg;
     this.color;
     this.content;
     this.state = CELL.EMPTY;
-  }
-  isPointerOver(pointer) {
-    return (
-      pointer.x >= this.x &&
-      pointer.x <= this.x + this.width &&
-      pointer.y >= this.y &&
-      pointer.y <= this.y + this.height
-    );
+    this.roundedRect = new RoundedRect(this.grid.game);
   }
   setState(newState) {
     if (this.state === CELL.EMPTY) this.state = newState;
@@ -99,13 +94,29 @@ class Cell {
     // Cell Border
     c.strokeStyle = this.borderColor;
     c.lineWidth = this.borderWidth;
-    c.strokeRect(this.x, this.y, this.width, this.height);
+    this.roundedRect.draw({
+      c: c,
+      x: this.x + 8,
+      y: this.y + 8,
+      width: this.width - 16,
+      height: this.height - 16,
+      radius: 20,
+      stroke: true,
+    });
     // Cell Background
     c.fillStyle = this.bg;
-    c.fillRect(this.x, this.y, this.width, this.height);
+    this.roundedRect.draw({
+      c: c,
+      x: this.x + 8,
+      y: this.y + 8,
+      width: this.width - 16,
+      height: this.height - 16,
+      radius: 20,
+      fill: true,
+    });
     // Cell Content
     c.fillStyle = this.color;
-    c.font = "bold 64px Monospace";
+    c.font = "bold 64px Roboto Mono";
     c.textAlign = "center";
     c.textBaseline = "middle";
     c.fillText(
@@ -128,21 +139,22 @@ export class Grid {
     this.gameOver = false;
     this.player = null;
     this.setCurrentPlayer();
+    this.currentPlayerSign = new CurrentPlayerSign(this.game);
     this.cells = [];
     this.createGrid();
     this.state = GRID.ACTIVE;
+    this.endGameMessage = new EndGameMessage(this.game);
   }
   createGrid() {
-    const padding = 10;
     for (let row = 0; row < 3; row++) {
       for (let col = 0; col < 3; col++) {
         this.cells.push(
           new Cell({
             grid: this,
-            x: this.x + padding + (col * (this.width - 2 * padding)) / 3,
-            y: this.y + padding + (row * (this.height - 2 * padding)) / 3,
-            width: (this.width - 2 * padding) / 3,
-            height: (this.height - 2 * padding) / 3,
+            x: this.x + (col * this.width) / 3,
+            y: this.y + (row * this.height) / 3,
+            width: this.width / 3,
+            height: this.height / 3,
           })
         );
       }
@@ -160,7 +172,7 @@ export class Grid {
   handleClick() {
     this.cells.forEach((cell) => {
       if (
-        cell.isPointerOver(this.input.pointer) &&
+        this.game.isPointerOver(this.input.pointer, cell) &&
         cell.state === CELL.EMPTY &&
         !this.gameOver
       ) {
@@ -190,69 +202,48 @@ export class Grid {
     if (won) {
       this.setState(GRID[winner]);
       this.gameOver = true;
+      console.log(winner);
     } else if (this.isGridDraw(this.cells)) {
       this.setState(GRID.DRAW);
       this.gameOver = true;
     }
   }
-  displayCurrentPlayer(c, player) {
-    c.save();
-    c.textAlign = "center";
-    c.textBaseline = "middle";
-    // Player X
-    c.fillStyle = player === PLAYER.X ? "blue" : "grey";
-    c.font = "bold 64px Roboto Mono";
-    c.fillText("X", this.x + 128, this.height * 0.2);
-    c.font = "bold 32px Roboto Mono";
-    c.fillText("Turn", this.x + 128, this.height * 0.25);
-    // Player O
-    c.fillStyle = player === PLAYER.O ? "maroon" : "grey";
-    c.font = "bold 64px Roboto Mono";
-    c.fillText("O", this.x + 640, this.height * 0.2);
-    c.font = "bold 32px Roboto Mono";
-    c.fillText("Turn", this.x + 640, this.height * 0.25);
-    c.restore();
-  }
-  displayEndGameMessage({ c, winner, message }) {
-    c.save();
-    c.fillStyle = "white";
-    c.shadowColor = "rgba(0, 0, 0, 0.5)";
-    c.shadowBlur = 10;
-    c.shadowOffsetX = 5;
-    c.shadowOffsetY = 5;
-    c.fillRect(
-      0,
-      this.game.height * 0.25 + this.game.height * 0.125,
-      this.game.width,
-      this.game.height * 0.25
-    );
-    if (winner === PLAYER.X) {
-      c.fillStyle = "blue";
-    } else if (winner === PLAYER.O) {
-      c.fillStyle = "maroon";
-    } else {
-      c.fillStyle = "black";
-    }
-    c.font = "bold 96px Monospace";
-    c.textAlign = "center";
-    c.textBaseline = "middle";
-    c.fillText(message, this.x + this.width * 0.5, this.y + this.height * 0.5);
-    c.restore();
-  }
+  // handleReplay(pointer) {
+  //   if (
+  //     this.gameOver &&
+  //     this.game.isPointerOver(pointer, this.displayEndGameMessage())
+  //   ) {
+  //     window.location.reload();
+  //   }
+  // }
+  // replayButton() {}
   update() {
     this.cells.forEach((cell) => cell.update());
   }
   draw(c) {
+    this.currentPlayerSign.draw({
+      c: c,
+      player: this.player,
+      x_Xpos: this.x + 96,
+      o_Xpos: this.x + 608,
+      y: this.height * 0.15,
+    });
     this.cells.forEach((cell) => cell.draw(c));
-    this.displayCurrentPlayer(c, this.player);
     const { won, winner } = this.isGridWon(this.cells);
     if (won)
-      this.displayEndGameMessage({
+      this.endGameMessage.draw({
         c: c,
         winner: winner,
-        message: winner + " has won!",
+        message: winner + " Wins!",
+        x: this.x + this.width * 0.5,
+        y: this.y + this.height * 0.5,
       });
     else if (this.isGridDraw(this.cells))
-      this.displayEndGameMessage({ c: c, message: "It's a DRAW!" });
+      this.endGameMessage.draw({
+        c: c,
+        message: "DRAW!",
+        x: this.x + this.width * 0.5,
+        y: this.y + this.height * 0.5,
+      });
   }
 }

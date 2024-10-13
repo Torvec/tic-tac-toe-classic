@@ -1,4 +1,5 @@
 import { InputHandler } from "./InputHandler.js";
+import { Header, Footer } from "./UI.js";
 import { Grid } from "./Classic.js";
 
 export class Game {
@@ -9,44 +10,23 @@ export class Game {
     this.input = new InputHandler({
       game: this,
       canvas: this.canvas,
-      onPointerEvent: (pointer) => {
-        this.handlePointerEvent(pointer);
-      },
     });
-    this.gameLogo = new Image();
-    this.gameLogo.src = "./assets/game_logo.png";
-    this.myLogo = new Image();
-    this.myLogo.src = "./assets/logo_bo.png";
+    this.header = new Header(this);
     this.grid = new Grid(this);
+    this.footer = new Footer(this);
   }
-  handlePointerEvent(pointer) {
-    this.grid.handleClick(pointer);
-  }
-  header(c) {
-    c.drawImage(
-      this.gameLogo,
-      this.width * 0.5 - 50,
-      this.height * 0.075,
-      100,
-      118
+  isPointerOver(pointer, object) {
+    return (
+      pointer.x >= object.x &&
+      pointer.x <= object.x + object.width &&
+      pointer.y >= object.y &&
+      pointer.y <= object.y + object.height
     );
   }
-  footer(c) {
-    c.drawImage(this.myLogo, this.width * 0.4 - 24, this.height - 128, 48, 48);
-    c.save();
-    c.fillStyle = "black";
-    c.textAlign = "left";
-    c.textBaseline = "middle";
-    c.font = "24px Roboto";
-    c.fillText("2024 Edward Vonschondorf", this.width * 0.425, this.height - 120);
-    c.fillStyle = "#C76E00";
-    c.fillText("edward-vonschondorf.dev", this.width * 0.425, this.height - 88);
-    c.restore();
-  }
   render(c) {
-    this.header(c);
+    this.header.logo(c);
     this.grid.update(c);
     this.grid.draw(c);
-    this.footer(c);
+    this.footer.draw(c);
   }
 }
