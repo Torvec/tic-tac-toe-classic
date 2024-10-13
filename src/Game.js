@@ -32,15 +32,15 @@ export class Game {
     );
   }
   footer(c) {
-    c.drawImage(this.myLogo, this.width * 0.4 - 24, this.height - 72, 48, 48);
+    c.drawImage(this.myLogo, this.width * 0.4 - 24, this.height - 128, 48, 48);
     c.save();
     c.fillStyle = "black";
     c.textAlign = "left";
     c.textBaseline = "middle";
     c.font = "24px Roboto";
-    c.fillText("2024 Edward Vonschondorf", this.width * 0.425, this.height - 64);
+    c.fillText("2024 Edward Vonschondorf", this.width * 0.425, this.height - 120);
     c.fillStyle = "#C76E00";
-    c.fillText("edward-vonschondorf.dev", this.width * 0.425, this.height - 32);
+    c.fillText("edward-vonschondorf.dev", this.width * 0.425, this.height - 88);
     c.restore();
   }
   render(c) {
