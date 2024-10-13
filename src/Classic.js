@@ -121,10 +121,10 @@ export class Grid {
   constructor(game) {
     this.game = game;
     this.input = this.game.input;
-    this.x = 16;
-    this.y = 32;
-    this.width = this.game.width - 32;
-    this.height = this.game.height - 64;
+    this.width = 768;
+    this.height = 768;
+    this.x = this.game.width * 0.5 - this.width * 0.5;
+    this.y = this.game.height * 0.5 - this.width * 0.5;
     this.gameOver = false;
     this.player = null;
     this.setCurrentPlayer();
@@ -159,10 +159,13 @@ export class Grid {
   }
   handleClick() {
     this.cells.forEach((cell) => {
-      if (cell.isPointerOver(this.input.pointer) && cell.state === CELL.EMPTY) {
+      if (
+        cell.isPointerOver(this.input.pointer) &&
+        cell.state === CELL.EMPTY &&
+        !this.gameOver
+      ) {
         cell.setState(CELL[this.player]);
         this.handleGridStateChange();
-        if (this.gameOver) return;
         this.setCurrentPlayer();
       }
     });
@@ -177,7 +180,7 @@ export class Grid {
         return { won: true, winner: cellA };
       }
     }
-    return { wond: false, winner: null };
+    return { won: false, winner: null };
   }
   isGridDraw(cells) {
     return cells.every((cell) => cell.state !== CELL.EMPTY);
@@ -194,51 +197,46 @@ export class Grid {
   }
   displayCurrentPlayer(c, player) {
     c.save();
-    c.fillStyle = "white";
-    c.font = "bold 32px Monospace";
     c.textAlign = "center";
     c.textBaseline = "middle";
-    c.fillText("It is " + player + "'s Turn", this.width * 0.5, 32);
+    // Player X
+    c.fillStyle = player === PLAYER.X ? "blue" : "grey";
+    c.font = "bold 64px Roboto Mono";
+    c.fillText("X", this.x + 128, this.height * 0.2);
+    c.font = "bold 32px Roboto Mono";
+    c.fillText("Turn", this.x + 128, this.height * 0.25);
+    // Player O
+    c.fillStyle = player === PLAYER.O ? "maroon" : "grey";
+    c.font = "bold 64px Roboto Mono";
+    c.fillText("O", this.x + 640, this.height * 0.2);
+    c.font = "bold 32px Roboto Mono";
+    c.fillText("Turn", this.x + 640, this.height * 0.25);
     c.restore();
   }
-  displayWinMessage(c, winner) {
+  displayEndGameMessage({ c, winner, message }) {
     c.save();
     c.fillStyle = "white";
+    c.shadowColor = "rgba(0, 0, 0, 0.5)";
+    c.shadowBlur = 10;
+    c.shadowOffsetX = 5;
+    c.shadowOffsetY = 5;
     c.fillRect(
       0,
-      this.y + this.height * 0.333,
-      this.width + 32,
-      this.height * 0.333
+      this.game.height * 0.25 + this.game.height * 0.125,
+      this.game.width,
+      this.game.height * 0.25
     );
-    c.fillStyle = "purple";
-    c.font = "bold 128px Monospace";
+    if (winner === PLAYER.X) {
+      c.fillStyle = "blue";
+    } else if (winner === PLAYER.O) {
+      c.fillStyle = "maroon";
+    } else {
+      c.fillStyle = "black";
+    }
+    c.font = "bold 96px Monospace";
     c.textAlign = "center";
     c.textBaseline = "middle";
-    c.fillText(
-      winner + " has won!",
-      this.x + this.width * 0.5,
-      this.y + this.height * 0.5
-    );
-    c.restore();
-  }
-  displayDrawMessage(c) {
-    c.save();
-    c.fillStyle = "white";
-    c.fillRect(
-      0,
-      this.y + this.height * 0.333,
-      this.width + 32,
-      this.height * 0.333
-    );
-    c.fillStyle = "black";
-    c.font = "bold 128px Monospace";
-    c.textAlign = "center";
-    c.textBaseline = "middle";
-    c.fillText(
-      "The Game is a Draw!",
-      this.x + this.width * 0.5,
-      this.y + this.height * 0.5
-    );
+    c.fillText(message, this.x + this.width * 0.5, this.y + this.height * 0.5);
     c.restore();
   }
   update() {
@@ -248,7 +246,13 @@ export class Grid {
     this.cells.forEach((cell) => cell.draw(c));
     this.displayCurrentPlayer(c, this.player);
     const { won, winner } = this.isGridWon(this.cells);
-    if (won) this.displayWinMessage(c, winner);
-    else if (this.isGridDraw(this.cells)) this.displayDrawMessage(c);
+    if (won)
+      this.displayEndGameMessage({
+        c: c,
+        winner: winner,
+        message: winner + " has won!",
+      });
+    else if (this.isGridDraw(this.cells))
+      this.displayEndGameMessage({ c: c, message: "It's a DRAW!" });
   }
 }
