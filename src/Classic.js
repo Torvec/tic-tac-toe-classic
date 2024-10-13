@@ -172,7 +172,7 @@ export class Grid {
   handleClick() {
     this.cells.forEach((cell) => {
       if (
-        this.game.isPointerOver(this.input.pointer, cell) &&
+        this.input.isPointerOver(this.input.pointer, cell) &&
         cell.state === CELL.EMPTY &&
         !this.gameOver
       ) {
@@ -207,17 +207,21 @@ export class Grid {
       this.gameOver = true;
     }
   }
-  // handleReplay(pointer) {
-  //   if (
-  //     this.gameOver &&
-  //     this.game.isPointerOver(pointer, this.displayEndGameMessage())
-  //   ) {
-  //     window.location.reload();
-  //   }
-  // }
-  // replayButton() {}
+  handleReplayCountdown() {
+    if (this.gameOver) {
+      let countdown = 3;
+      const interval = setInterval(() => {
+        countdown--;
+        if (countdown < 0) {
+          clearInterval(interval);
+          window.location.reload();
+        }
+      }, 1000);
+    }
+  }
   update() {
     this.cells.forEach((cell) => cell.update());
+    this.handleReplayCountdown();
   }
   draw(c) {
     this.currentPlayerSign.draw({
@@ -229,7 +233,7 @@ export class Grid {
     });
     this.cells.forEach((cell) => cell.draw(c));
     const { won, winner } = this.isGridWon(this.cells);
-    if (won)
+    if (won) {
       this.endGameMessage.draw({
         c: c,
         winner: winner,
@@ -237,12 +241,13 @@ export class Grid {
         x: this.x + this.width * 0.5,
         y: this.y + this.height * 0.5,
       });
-    else if (this.isGridDraw(this.cells))
+    } else if (this.isGridDraw(this.cells)) {
       this.endGameMessage.draw({
         c: c,
         message: "DRAW!",
         x: this.x + this.width * 0.5,
         y: this.y + this.height * 0.5,
       });
+    }
   }
 }

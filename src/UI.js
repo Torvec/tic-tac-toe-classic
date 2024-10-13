@@ -110,6 +110,8 @@ export class EndGameMessage extends UI {
     c.textAlign = "center";
     c.textBaseline = "middle";
     c.fillText(message, x, y);
+    c.font = "32px Roboto";
+    c.fillText("The game will restart soon...", x, y + 96);
     c.restore();
   }
 }

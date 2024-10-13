@@ -18,7 +18,6 @@ export class InputHandler {
     this.pointer.x = e.clientX - rect.left;
     this.pointer.y = e.clientY - rect.top;
     this.game.grid.handleClick(this.pointer);
-    // this.game.grid.handleReplay(this.pointer);
   }
   handleTouchStartEvent(e) {
     const rect = this.canvas.getBoundingClientRect();
@@ -26,6 +25,13 @@ export class InputHandler {
     this.pointer.x = touch.clientX - rect.left;
     this.pointer.y = touch.clientY - rect.top;
     this.game.grid.handleClick(this.pointer);
-    // this.game.grid.handleReplay(this.pointer);
+  }
+  isPointerOver(pointer, object) {
+    return (
+      pointer.x >= object.x &&
+      pointer.x <= object.x + object.width &&
+      pointer.y >= object.y &&
+      pointer.y <= object.y + object.height
+    );
   }
 }
