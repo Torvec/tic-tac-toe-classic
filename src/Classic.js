@@ -136,6 +136,9 @@ export class Grid {
     this.height = 768;
     this.x = this.game.width * 0.5 - this.width * 0.5;
     this.y = this.game.height * 0.5 - this.width * 0.5;
+    this.init();
+  }
+  init() {
     this.gameOver = false;
     this.player = null;
     this.setCurrentPlayer();
@@ -202,9 +205,11 @@ export class Grid {
     if (won) {
       this.setState(GRID[winner]);
       this.gameOver = true;
+      this.handleReplayCountdown();
     } else if (this.isGridDraw(this.cells)) {
       this.setState(GRID.DRAW);
       this.gameOver = true;
+      this.handleReplayCountdown();
     }
   }
   handleReplayCountdown() {
@@ -214,14 +219,13 @@ export class Grid {
         countdown--;
         if (countdown < 0) {
           clearInterval(interval);
-          window.location.reload();
+          this.init();
         }
       }, 1000);
     }
   }
   update() {
     this.cells.forEach((cell) => cell.update());
-    this.handleReplayCountdown();
   }
   draw(c) {
     this.currentPlayerSign.draw({
