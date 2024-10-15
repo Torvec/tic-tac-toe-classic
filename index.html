@@ -11,30 +11,30 @@
       href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Mono:wght@100..700&display=swap"
       rel="stylesheet"
     />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        background-color: #fff;
-        font-family: "Roboto", sans-serif;
-      }
-      #gameCanvas {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        max-width: 100%;
-        max-height: 100%;
-        background: #e0e0e0;
-        border-radius: 40px;
-      }
-    </style>
-    <script type="module" src="src/main.js" defer></script>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="src/Game.js" defer></script>
   </head>
   <body>
-    <canvas id="gameCanvas"></canvas>
+    <div id="container">
+      <header>
+        <img
+          class="gameLogo"
+          src="assets/game_logo.png"
+          alt="Tic Tac Toe Classic Logo"
+        />
+      </header>
+      <main>
+        <canvas id="gameCanvas"></canvas>
+      </main>
+      <footer>
+        <div>
+          <img src="assets/logo_bo.png" alt="EV Logo" />
+        </div>
+        <div>
+          <p>2024 Edward Vonschondorf</p>
+          <a href="https://edward-vonschondorf.dev">edward-vonschondorf.dev</a>
+        </div>
+      </footer>
+    </div>
   </body>
 </html>

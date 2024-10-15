@@ -1,24 +1,33 @@
 import { InputHandler } from "./InputHandler.js";
-import { Header, Footer } from "./UI.js";
 import { Grid } from "./Classic.js";
 
 export class Game {
-  constructor(canvas) {
-    this.canvas = canvas;
+  constructor() {
     this.width = canvas.width;
     this.height = canvas.height;
     this.input = new InputHandler({
       game: this,
-      canvas: this.canvas,
+      canvas: canvas,
     });
-    this.header = new Header(this);
     this.grid = new Grid(this);
-    this.footer = new Footer(this);
   }
   render(c) {
-    this.header.logo(c);
     this.grid.update(c);
     this.grid.draw(c);
-    this.footer.draw(c);
   }
 }
+
+const canvas = document.getElementById("gameCanvas");
+const c = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = Math.max(320, Math.min(window.innerWidth + 256, 928));
+console.log(canvas.width, canvas.height);
+
+const game = new Game();
+
+function animationLoop() {
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  game.render(c);
+  requestAnimationFrame(animationLoop);
+}
+requestAnimationFrame(animationLoop);

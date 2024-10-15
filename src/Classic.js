@@ -90,33 +90,36 @@ class Cell {
     this.cellStates(this.state);
   }
   draw(c) {
+    let cellSpacing = this.grid.width <= 640 ? 8 : 16;
+    let fontSize = this.grid.width <= 640 ? "64px" : "128px";
+    let radius = this.grid.width <= 640 ? 10 : 20;
     c.save();
     // Cell Border
     c.strokeStyle = this.borderColor;
     c.lineWidth = this.borderWidth;
     this.roundedRect.draw({
       c: c,
-      x: this.x + 8,
-      y: this.y + 8,
-      width: this.width - 16,
-      height: this.height - 16,
-      radius: 20,
+      x: this.x + cellSpacing / 2,
+      y: this.y + cellSpacing / 2,
+      width: this.width - cellSpacing,
+      height: this.height - cellSpacing,
+      radius: radius,
       stroke: true,
     });
     // Cell Background
     c.fillStyle = this.bg;
     this.roundedRect.draw({
       c: c,
-      x: this.x + 8,
-      y: this.y + 8,
-      width: this.width - 16,
-      height: this.height - 16,
-      radius: 20,
+      x: this.x + cellSpacing / 2,
+      y: this.y + cellSpacing / 2,
+      width: this.width - cellSpacing,
+      height: this.height - cellSpacing,
+      radius: radius,
       fill: true,
     });
     // Cell Content
     c.fillStyle = this.color;
-    c.font = "bold 128px Roboto Mono";
+    c.font = `bold ${fontSize} Roboto Mono`;
     c.textAlign = "center";
     c.textBaseline = "middle";
     c.fillText(
@@ -132,17 +135,17 @@ export class Grid {
   constructor(game) {
     this.game = game;
     this.input = this.game.input;
-    this.width = 768;
-    this.height = 768;
+    this.width = Math.max(320, Math.min(this.game.width, 768)); // 320 to 768 width range
+    this.height = Math.max(320, Math.min(this.game.width, 768)); // 320 to 768 height range
     this.x = this.game.width * 0.5 - this.width * 0.5;
-    this.y = this.game.height * 0.5 - this.width * 0.5;
+    this.y = 160
     this.init();
   }
   init() {
     this.gameOver = false;
     this.player = null;
     this.setCurrentPlayer();
-    this.currentPlayerSign = new CurrentPlayerSign(this.game);
+    this.currentPlayerSign = new CurrentPlayerSign(this.game, this.player);
     this.cells = [];
     this.createGrid();
     this.state = GRID.ACTIVE;
@@ -228,30 +231,13 @@ export class Grid {
     this.cells.forEach((cell) => cell.update());
   }
   draw(c) {
-    this.currentPlayerSign.draw({
-      c: c,
-      player: this.player,
-      x_Xpos: this.x + 96,
-      o_Xpos: this.x + 608,
-      y: this.height * 0.15,
-    });
+    this.currentPlayerSign.draw(c);
     this.cells.forEach((cell) => cell.draw(c));
     const { won, winner } = this.isGridWon(this.cells);
     if (won) {
-      this.endGameMessage.draw({
-        c: c,
-        winner: winner,
-        message: winner + " Wins!",
-        x: this.x + this.width * 0.5,
-        y: this.y + this.height * 0.5,
-      });
+      this.endGameMessage.draw(c, winner);
     } else if (this.isGridDraw(this.cells)) {
-      this.endGameMessage.draw({
-        c: c,
-        message: "DRAW!",
-        x: this.x + this.width * 0.5,
-        y: this.y + this.height * 0.5,
-      });
+      this.endGameMessage.draw(c);
     }
   }
 }

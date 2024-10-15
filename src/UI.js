@@ -6,47 +6,6 @@ class UI {
   }
 }
 
-export class Header extends UI {
-  constructor(game) {
-    super(game);
-    this.gameLogo = new Image();
-    this.gameLogo.src = "./assets/game_logo.png";
-  }
-  logo(c) {
-    c.drawImage(
-      this.gameLogo,
-      this.width * 0.5 - 50,
-      this.height * 0.075,
-      100,
-      118
-    );
-  }
-}
-
-export class Footer extends UI {
-  constructor(game) {
-    super(game);
-    this.myLogo = new Image();
-    this.myLogo.src = "./assets/logo_bo.png";
-  }
-  draw(c) {
-    c.drawImage(this.myLogo, this.width * 0.4 - 24, this.height - 128, 48, 48);
-    c.save();
-    c.fillStyle = "black";
-    c.textAlign = "left";
-    c.textBaseline = "middle";
-    c.font = "24px Roboto";
-    c.fillText(
-      "2024 Edward Vonschondorf",
-      this.width * 0.425,
-      this.height - 120
-    );
-    c.fillStyle = "#C76E00";
-    c.fillText("edward-vonschondorf.dev", this.width * 0.425, this.height - 88);
-    c.restore();
-  }
-}
-
 export class RoundedRect extends UI {
   constructor(game) {
     super(game);
@@ -67,19 +26,24 @@ export class RoundedRect extends UI {
 }
 
 export class CurrentPlayerSign extends UI {
-  constructor(game) {
+  constructor(game, player) {
     super(game);
+    this.player = player;
+    this.width = Math.max(320, Math.min(this.game.width, 768));
+    this.height = 160;
+    this.x = this.game.width * 0.5 - this.width * 0.5;
+    this.y = 0;
     this.xTurnImg = new Image();
     this.xTurnImg.src = "./assets/x_turn.png";
     this.oTurnImg = new Image();
     this.oTurnImg.src = "./assets/o_turn.png";
   }
-  draw({ c, player, x_Xpos, o_Xpos, y }) {
+  draw(c) {
     c.save();
-    c.globalAlpha = player === "X" ? 1 : 0.2;
-    c.drawImage(this.xTurnImg, x_Xpos, y, 54, 89);
-    c.globalAlpha = player === "O" ? 1 : 0.2;
-    c.drawImage(this.oTurnImg, o_Xpos, y, 64, 89);
+    c.globalAlpha = this.player === "X" ? 1 : 0.2;
+    c.drawImage(this.xTurnImg, this.x + 64, this.y + 45, 54, 89);
+    c.globalAlpha = this.player === "O" ? 1 : 0.2;
+    c.drawImage(this.oTurnImg, this.x + this.width - 128, this.y + 45, 64, 89);
     c.restore();
   }
 }
@@ -87,31 +51,43 @@ export class CurrentPlayerSign extends UI {
 export class EndGameMessage extends UI {
   constructor(game) {
     super(game);
+    this.x = this.width / 2;
+    this.y = this.height / 2;
   }
-  draw({ c, winner, message, x, y }) {
+  draw(c, winner) {
+    let message = "";
+    let messageColor;
+    let fontSize = this.width <= 640 ? 64 : 96;
+    if (winner) {
+      if (winner === "X") {
+        message = "X Wins!";
+        messageColor = "#0A1DC2";
+      } else {
+        message = "O Wins!";
+        messageColor = "#C20A0A";
+      }
+    } else {
+      message = "Draw!";
+      messageColor = "#999999";
+    }
+    // Draw the rectangle
     c.save();
     c.fillStyle = "white";
     c.shadowColor = "rgba(0, 0, 0, 0.25)";
     c.shadowBlur = 10;
     c.shadowOffsetX = 0;
     c.shadowOffsetY = 5;
-    c.fillRect(
-      0,
-      this.game.height * 0.25 + this.game.height * 0.125,
-      this.game.width,
-      this.game.height * 0.25
-    );
-    if (winner === "X") c.fillStyle = "#0A1DC2";
-    else if (winner === "O") c.fillStyle = "#C20A0A";
-    else {
-      c.fillStyle = "#999999";
-    }
-    c.font = "bold 96px Roboto";
+    c.fillRect(0, this.height * 0.25, this.width, this.height * 0.5);
+    c.restore();
+    // Draw the message
+    c.save();
+    c.fillStyle = messageColor;
+    c.font = `bold ${fontSize}px Roboto`;
     c.textAlign = "center";
     c.textBaseline = "middle";
-    c.fillText(message, x, y);
-    c.font = "32px Roboto";
-    c.fillText("The game will restart soon...", x, y + 96);
+    c.fillText(message, this.x, this.y);
+    c.font = `${fontSize / 3}px Roboto`;
+    c.fillText("The game will restart soon...", this.x, this.y + 96);
     c.restore();
   }
 }
