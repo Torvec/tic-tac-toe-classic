@@ -26,9 +26,8 @@ export class RoundedRect extends UI {
 }
 
 export class CurrentPlayerSign extends UI {
-  constructor(game, player) {
+  constructor(game) {
     super(game);
-    this.player = player;
     this.width = Math.max(320, Math.min(this.game.width, 768));
     this.height = 160;
     this.x = this.game.width * 0.5 - this.width * 0.5;
@@ -38,11 +37,11 @@ export class CurrentPlayerSign extends UI {
     this.oTurnImg = new Image();
     this.oTurnImg.src = "./assets/o_turn.png";
   }
-  draw(c) {
+  draw(c, player) {
     c.save();
-    c.globalAlpha = this.player === "X" ? 1 : 0.2;
+    c.globalAlpha = player === "X" ? 1 : 0.2;
     c.drawImage(this.xTurnImg, this.x + 64, this.y + 45, 54, 89);
-    c.globalAlpha = this.player === "O" ? 1 : 0.2;
+    c.globalAlpha = player === "O" ? 1 : 0.2;
     c.drawImage(this.oTurnImg, this.x + this.width - 128, this.y + 45, 64, 89);
     c.restore();
   }

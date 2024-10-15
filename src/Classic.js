@@ -145,7 +145,7 @@ export class Grid {
     this.gameOver = false;
     this.player = null;
     this.setCurrentPlayer();
-    this.currentPlayerSign = new CurrentPlayerSign(this.game, this.player);
+    this.currentPlayerSign = new CurrentPlayerSign(this.game);
     this.cells = [];
     this.createGrid();
     this.state = GRID.ACTIVE;
@@ -231,7 +231,7 @@ export class Grid {
     this.cells.forEach((cell) => cell.update());
   }
   draw(c) {
-    this.currentPlayerSign.draw(c);
+    this.currentPlayerSign.draw(c, this.player);
     this.cells.forEach((cell) => cell.draw(c));
     const { won, winner } = this.isGridWon(this.cells);
     if (won) {

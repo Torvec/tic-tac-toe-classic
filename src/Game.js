@@ -21,7 +21,6 @@ const canvas = document.getElementById("gameCanvas");
 const c = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = Math.max(320, Math.min(window.innerWidth + 256, 928));
-console.log(canvas.width, canvas.height);
 
 const game = new Game();
 
